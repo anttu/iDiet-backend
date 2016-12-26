@@ -6,53 +6,47 @@ const app = express();
 const API_KEY = process.env.API_KEY;
 const API_SECRET = process.env.API_SECRET;
 
-let _token;
-let _secret;
+const oauth = new OAuth.OAuth(
+    'https://oauth.withings.com/account/request_token',
+    'https://oauth.withings.com/account/access_token',
+    API_KEY,
+    API_SECRET,
+    '1.0',
+    'http://localhost:3000/callback',
+    'HMAC-SHA1',
+);
 
 /**
 Get the URL from which an end user can authorize iDiet to access his/her data
 */
 app.get('/authorizelink', (req, res) => {
-    const oauth = new OAuth.OAuth(
-        'https://oauth.withings.com/account/request_token',
-        'https://oauth.withings.com/account/access_token',
-        API_KEY,
-        API_SECRET,
-        '1.0',
-        'http://localhost:3000/callback',
-        'HMAC-SHA1',
-    );
-
     oauth.getOAuthRequestToken((err, token, tokenSecret) => {
-        _token = token;
-        _secret = tokenSecret;
-        console.log('1st step:' + JSON.stringify({t: token, s: tokenSecret}));
         res.send(JSON.stringify({
+            token: token,
+            token_secret: tokenSecret,
             url: oauth.signUrl('https://oauth.withings.com/account/authorize', token, tokenSecret),
         }));
     });
 });
 
 /**
-Callback handler for the OAuth redirect. Returns the oauth token which is required for Withins API data queries
+Callback handler for the OAuth redirect.
 */
 app.get('/callback', (req, res) => {
-    console.log('starting callback');
-    const oauth = new OAuth.OAuth(
-        null,
-        'https://oauth.withings.com/account/access_token',
-        API_KEY,
-        API_SECRET,
-        '1.0',
-        'http://localhost:3000/callback',
-        'HMAC-SHA1',
-    );
+    res.send(JSON.stringify({
+        user_id: req.query.userid,
+        verifier: req.query.oauth_verifier,
+    }));
+});
 
-    console.log(JSON.stringify({a: req.query.oauth_token, b: API_SECRET, c: req.query.oauth_verifier}));
+/*
+Generate oauth access token.
+*/
+app.get('/accesstoken', (req, res) => {
     oauth.getOAuthAccessToken(
-        _token,
-        _secret,
-        req.query.oauth_verifier,
+        req.query.token,
+        req.query.tokensecret,
+        req.query.oauthverifier,
         (error, oauth_access_token, oauth_access_token_secret, results) => {
             if (error) {
                 res.send(JSON.stringify(error));
@@ -60,6 +54,8 @@ app.get('/callback', (req, res) => {
                 res.send(JSON.stringify({
                     user_id: req.query.userid,
                     oauth_access_token: oauth_access_token,
+                    oauth_access_token_secret: oauth_access_token_secret,
+                    results: results,
                 }));
             }
         });
