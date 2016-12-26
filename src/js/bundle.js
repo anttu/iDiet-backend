@@ -1,6 +1,5 @@
 import OAuth from 'oauth';
-
-const express = require('express');
+import express from 'express';
 
 const app = express();
 
