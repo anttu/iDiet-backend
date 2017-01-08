@@ -16,6 +16,18 @@ const oauth = new OAuth.OAuth(
     'HMAC-SHA1',
 );
 
+app.get('/bt', (req, res) => {
+    res.send(
+        `
+        <html><body>
+        <script type="text/javascript">
+            var foo = "Anttu! (on RL-kuningas)";
+        </script>
+        </html></body>
+        `
+    );
+});
+
 /**
 Get the URL from which an end user can authorize iDiet to access his/her data
 */
