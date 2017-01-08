@@ -44,13 +44,21 @@ app.get('/authorizelink', (req, res) => {
 
 /**
 Callback handler for the OAuth redirect. User will return here when iDiet has been authorized.
+
+React Native webview (bridge) is responsible for parsing the following javascript and communicating it back to
+the application.
 */
 app.get('/callback', (req, res) => {
-    res.type('json');
-    res.send(JSON.stringify({
-        user_id: req.query.userid,
-        verifier: req.query.oauth_verifier,
-    }));
+    res.send(
+        `
+        <html><body>
+        <script type="text/javascript">
+            var verifier = '${req.query.oauth_verifier}';
+            var user_id = '${req.query.userid}';
+        </script>
+        </html></body>
+        `
+    );
 });
 
 /*
