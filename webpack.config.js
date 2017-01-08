@@ -1,11 +1,12 @@
-var path = require('path');
-var nodeModulesPath = path.resolve(__dirname, 'node_modules');
+const path = require('path');
+
+const nodeModulesPath = path.resolve(__dirname, 'node_modules');
 
 module.exports = {
     entry: './src/js/bundle.js',
     output: {
         path: __dirname + '/build',
-        filename: 'server.js'
+        filename: 'server.js',
     },
     target: 'node',
     module: {

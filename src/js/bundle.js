@@ -30,7 +30,7 @@ app.get('/authorizelink', (req, res) => {
 });
 
 /**
-Callback handler for the OAuth redirect.
+Callback handler for the OAuth redirect. User will return here when iDiet has been authorized.
 */
 app.get('/callback', (req, res) => {
     res.send(JSON.stringify({
