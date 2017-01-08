@@ -21,6 +21,7 @@ Get the URL from which an end user can authorize iDiet to access his/her data
 */
 app.get('/authorizelink', (req, res) => {
     oauth.getOAuthRequestToken((err, token, tokenSecret) => {
+        res.type('json');
         res.send(JSON.stringify({
             token: token,
             token_secret: tokenSecret,
@@ -33,6 +34,7 @@ app.get('/authorizelink', (req, res) => {
 Callback handler for the OAuth redirect. User will return here when iDiet has been authorized.
 */
 app.get('/callback', (req, res) => {
+    res.type('json');
     res.send(JSON.stringify({
         user_id: req.query.userid,
         verifier: req.query.oauth_verifier,
@@ -43,6 +45,7 @@ app.get('/callback', (req, res) => {
 Generate oauth access token.
 */
 app.get('/accesstoken', (req, res) => {
+    res.type('json');
     oauth.getOAuthAccessToken(
         req.query.token,
         req.query.tokensecret,
