@@ -7,6 +7,10 @@ const app = express();
 const CONSUMER_KEY = process.env.API_KEY;
 const CONSUMER_SECRET = process.env.API_SECRET;
 
+const TYPE = {
+    weight: 1,
+};
+
 const oauth = new OAuth.OAuth(
     'https://oauth.withings.com/account/request_token',
     'https://oauth.withings.com/account/access_token',
@@ -17,28 +21,28 @@ const oauth = new OAuth.OAuth(
     'HMAC-SHA1',
 );
 
-app.get('/api', (req, res) => {
-    const api = `http://wbsapi.withings.net/measure?action=getmeas&userid=${req.query.userid}`;
+app.get('/measurement', (req, res) => {
+    const mtype = TYPE[req.query.mtype];
+    if (!mtype) {
+        res.send(JSON.stringify({ error: `unsupported measurement type ${req.query.mtype}` }));
+        return;
+    }
+    const api = `http://wbsapi.withings.net/measure?action=getmeas&meastype=${mtype}&userid=${req.query.userid}`;
     const oapi = oauth.signUrl(api, req.query.oauthtoken, req.query.oauthsecret);
     axios.get(oapi)
     .then((response) => {
-        res.send(response.data);
+        res.send(JSON.stringify(
+            response.data.body.measuregrps.map((x) => {
+                return {
+                    date: x.date,
+                    weight: x.measures[0].value,
+                };
+            })
+        ));
     })
     .catch((error) => {
         console.log(error);
     });
-});
-
-app.get('/bt', (req, res) => {
-    res.send(
-        `
-        <html><body>
-        <script type="text/javascript">
-            var foo = "Anttu! (on RL-kuningas)";
-        </script>
-        </html></body>
-        `
-    );
 });
 
 /**
