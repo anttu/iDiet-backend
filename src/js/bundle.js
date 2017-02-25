@@ -1,20 +1,33 @@
 import OAuth from 'oauth';
 import express from 'express';
+import axios from 'axios';
 
 const app = express();
 
-const API_KEY = process.env.API_KEY;
-const API_SECRET = process.env.API_SECRET;
+const CONSUMER_KEY = process.env.API_KEY;
+const CONSUMER_SECRET = process.env.API_SECRET;
 
 const oauth = new OAuth.OAuth(
     'https://oauth.withings.com/account/request_token',
     'https://oauth.withings.com/account/access_token',
-    API_KEY,
-    API_SECRET,
+    CONSUMER_KEY,
+    CONSUMER_SECRET,
     '1.0',
     'http://localhost:3000/callback',
     'HMAC-SHA1',
 );
+
+app.get('/api', (req, res) => {
+    const api = `http://wbsapi.withings.net/measure?action=getmeas&userid=${req.query.userid}`;
+    const oapi = oauth.signUrl(api, req.query.oauthtoken, req.query.oauthsecret);
+    axios.get(oapi)
+    .then((response) => {
+        res.send(response.data);
+    })
+    .catch((error) => {
+        console.log(error);
+    });
+});
 
 app.get('/bt', (req, res) => {
     res.send(

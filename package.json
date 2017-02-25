@@ -9,10 +9,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.15.3",
     "babel-eslint": "^7.1.1",
     "express": "^4.14.0",
     "json-loader": "^0.5.4",
-    "oauth": "^0.9.14"
+    "oauth": "^0.9.14",
+    "webpack": "^1.14.0"
   },
   "devDependencies": {
     "babel-preset-es2015": "^6.18.0",
