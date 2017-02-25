@@ -21,6 +21,13 @@ const oauth = new OAuth.OAuth(
     'HMAC-SHA1',
 );
 
+/**
+Get user measurements from Withings database. Requires following parameters:
+    mtype: measurement type (e.g. weight)
+    userid: ID of the user, (e.g. 1232456)
+    oauthtoken: oauth token
+    oauthsecret: oauth secret
+*/
 app.get('/measurement', (req, res) => {
     const mtype = TYPE[req.query.mtype];
     if (!mtype) {
