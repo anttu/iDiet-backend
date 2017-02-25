@@ -32,12 +32,12 @@ app.get('/measurement', (req, res) => {
     axios.get(oapi)
     .then((response) => {
         res.send(JSON.stringify(
-            response.data.body.measuregrps.map((x) => {
-                return {
+            response.data.body.measuregrps.map(x => (
+                {
                     date: x.date,
                     weight: x.measures[0].value,
-                };
-            })
+                }
+            ))
         ));
     })
     .catch((error) => {
