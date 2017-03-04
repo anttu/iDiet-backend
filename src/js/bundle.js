@@ -38,14 +38,19 @@ app.get('/measurement', (req, res) => {
     const oapi = oauth.signUrl(api, req.query.oauthtoken, req.query.oauthsecret);
     axios.get(oapi)
     .then((response) => {
-        res.send(JSON.stringify(
-            response.data.body.measuregrps.map(x => (
-                {
-                    date: x.date,
-                    weight: x.measures[0].value,
-                }
-            ))
-        ));
+        try {
+            res.send(JSON.stringify(
+                response.data.body.measuregrps.map(x => (
+                    {
+                        date: x.date,
+                        weight: x.measures[0].value,
+                    }
+                ))
+            ));
+        } catch (error) {
+            console.error(`Failed to parse measurement response ${error.message}`);
+            console.log(JSON.stringify(response.data));
+        }
     })
     .catch((error) => {
         console.log(error);
